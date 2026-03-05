@@ -2,8 +2,7 @@ name: Deploy HTML to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -13,18 +12,29 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      # Construire un dossier de publication en excluant README.md (et d'autres trucs inutiles)
+      - name: Prepare publish directory
+        run: |
+          mkdir -p dist
+          rsync -av --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='README.md' \
+            --exclude='*.md' \
+            ./ dist/
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      # Sécurité: vérifier qu'un index.html existe bien
+      - name: Check index.html
+        run: |
+          test -f dist/index.html || (echo "ERROR: dist/index.html not found. Put index.html at repo root or adjust path." && exit 1)
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: dist
 
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v4
