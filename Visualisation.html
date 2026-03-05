@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechGuys - Playbook de Scale-Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tip-card {
+            transition: all 0.3s ease;
+        }
+        .tip-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .hidden-content {
+            display: none;
+        }
+        .expanded .hidden-content {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+    <!-- Chosen Palette: Warm Neutrals (Slate-50, Slate-800) with Indigo-600 primary and Sky-500 secondary accents. Minimalist and professional for a B2B tech agency. -->
+    
+    <!-- Application Structure Plan: Dashboard/Playbook layout. The app is divided into an analytical view (Charts showing the "Why") and a highly interactive, filterable grid of the 10 tactical tips (The "How"). This structure was chosen because agency leaders need to quickly find relevant advice (Sales vs Ops) while understanding the long-term impact of systemic changes. Filters allow focused exploration, and expandable cards keep the UI clean while offering deep dives. -->
+    
+    <!-- Visualization & Content Choices: 
+    1. Line Chart (Chart.js): Shows "Predictable Revenue vs Chaotic Growth". Goal: Inform & Change. Justification: Visually demonstrates the core premise of Aaron Ross and Verne Harnish's books.
+    2. Interactive Grid: Organizes the 10 tips. Goal: Organize & Inform. Justification: Allows users to digest 10 dense concepts modularly. 
+    3. Filter Buttons: Goal: Navigate. Justification: Lets leaders focus on specific domains (Strategy, Sales, Ops).
+    Libraries: Chart.js for canvas charts. Tailwind for grid/UI. Vanilla JS for interactions. NO SVG/Mermaid. -->
+    
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <header class="bg-indigo-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight">TechGuys 🚀</h1>
+                <p class="text-indigo-200 mt-1 text-sm font-medium">Développement Web, Mobile & AI | Montréal</p>
+            </div>
+            <div class="text-right hidden sm:block">
+                <p class="text-xl font-semibold">Playbook de Scale-Up</p>
+                <p class="text-indigo-300 text-sm">Basé sur 6 best-sellers de la gestion B2B</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+
+        <section id="introduction" class="bg-white rounded-xl shadow-sm p-8 border border-slate-200">
+            <h2 class="text-2xl font-bold text-slate-900 mb-4">Préparer l'interne avant de scaler l'externe</h2>
+            <p class="text-lg text-slate-600 leading-relaxed">
+                Avant de multiplier vos budgets d'acquisition ou d'embaucher massivement, une agence tech comme TechGuys doit solidifier ses fondations. Les systèmes chaotiques se brisent sous la pression de la croissance. Cette section présente l'impact financier d'une croissance structurée (Predictable Revenue & Scaling Up) versus une croissance organique désordonnée. Interagissez avec le graphique ci-dessous pour voir la projection.
+            </p>
+            
+            <div class="mt-8 bg-slate-50 p-6 rounded-lg border border-slate-100">
+                <h3 class="text-lg font-semibold text-center mb-6">Projection : Croissance Organique vs Système Prévisible (MRR)</h3>
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="tactics">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Les 10 Actions à Haut ROI</h2>
+                <p class="text-slate-600 mb-6">
+                    Découvrez les 10 conseils tirés de notre bibliothèque (Traction, High Output Management, Good Strategy/Bad Strategy, etc.). Filtrez par catégorie pour vous concentrer sur vos priorités actuelles. Cliquez sur une carte pour révéler l'action concrète à implémenter.
+                </p>
+                
+                <div class="flex flex-wrap gap-3" id="filter-container">
+                    <button class="filter-btn active bg-indigo-600 text-white px-5 py-2 rounded-full font-medium text-sm transition-colors" data-filter="all">Tout voir</button>
+                    <button class="filter-btn bg-slate-200 text-slate-700 hover:bg-slate-300 px-5 py-2 rounded-full font-medium text-sm transition-colors" data-filter="Ventes">Ventes & Revenus</button>
+                    <button class="filter-btn bg-slate-200 text-slate-700 hover:bg-slate-300 px-5 py-2 rounded-full font-medium text-sm transition-colors" data-filter="Opérations">Opérations & Exécution</button>
+                    <button class="filter-btn bg-slate-200 text-slate-700 hover:bg-slate-300 px-5 py-2 rounded-full font-medium text-sm transition-colors" data-filter="Stratégie">Stratégie & Leadership</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tips-grid">
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center mt-12">
+        <p>Synthèse stratégique conçue pour l'équipe de direction de TechGuys.</p>
+    </footer>
+
+    <script>
+        const tipsData = [
+            {
+                id: 1,
+                title: "1. 'Nail a Niche' (Dominez une niche)",
+                category: "Stratégie",
+                book: "Predictable Revenue / Good Strategy",
+                icon: "🎯",
+                roi: "Très Élevé",
+                summary: "Arrêtez d'être une agence 'tout pour tous'. Spécialisez-vous pour devenir l'expert incontesté.",
+                details: "En tant qu'agence Web/AI, cibler tout le monde dilue votre message. Choisissez un secteur (ex: l'IA pour le secteur manufacturier ou les applications médicales). Cela réduit le coût d'acquisition client et vous permet de standardiser vos livrables.",
+                action: "Action : Choisissez 1 verticale pour vos efforts d'outbound ce trimestre. Refaites votre pitch : 'Nous aidons [Niche] à atteindre [Résultat] avec la technologie'."
+            },
+            {
+                id: 2,
+                title: "2. Séparez les rôles de vente",
+                category: "Ventes",
+                book: "Predictable Revenue",
+                icon: "🤝",
+                roi: "Élevé",
+                summary: "Ne demandez pas à vos 'closers' (Account Execs) de faire de la prospection à froid.",
+                details: "La prospection et le closing exigent des compétences différentes. Si vos fondateurs ou vendeurs expérimentés font les deux, le pipeline sera instable. Créez un rôle de SDR (Sales Development Representative) dédié 100% à générer des leads qualifiés.",
+                action: "Action : Assignez la prospection sortante à une personne dédiée (même à temps partiel) dont le seul KPI est de générer des rencontres pour les experts Tech/Vente."
+            },
+            {
+                id: 3,
+                title: "3. Le 'Rythme de Réunion' (Meeting Rhythm)",
+                category: "Opérations",
+                book: "Traction (EOS) / Scaling Up",
+                icon: "⏱️",
+                roi: "Très Élevé",
+                summary: "Remplacez les réunions ad-hoc par un rythme strict et prévisible.",
+                details: "L'alignement est le plus grand défi d'une agence en croissance. Implémentez un 'Daily Huddle' de 15 min (Quoi de neuf, KPIs du jour, Blocages) et une réunion hebdomadaire 'Level 10' de 90 min axée uniquement sur la résolution des problèmes (Issues).",
+                action: "Action : Planifiez un appel debout (stand-up) de 10-15 min tous les matins à 9h00 avec les leads Web, Mobile, AI et Vente."
+            },
+            {
+                id: 4,
+                title: "4. Définissez vos 'Rocks' trimestriels",
+                category: "Stratégie",
+                book: "Traction",
+                icon: "🪨",
+                roi: "Élevé",
+                summary: "Fixez 3 à 7 priorités absolues pour les 90 prochains jours.",
+                details: "La dispersion tue les agences tech. Les 'Rocks' sont les 3 à 7 choses les plus importantes que TechGuys doit accomplir ce trimestre. Si tout le reste échoue mais que les Rocks sont atteints, c'est un bon trimestre.",
+                action: "Action : Identifiez vos 3 Rocks (ex: Lancer le package 'Audit AI', finaliser le nouveau site web de l'agence, recruter 1 dev Senior) et assignez un propriétaire unique à chacun."
+            },
+            {
+                id: 5,
+                title: "5. L'Effet de Levier Managérial",
+                category: "Stratégie",
+                book: "High Output Management",
+                icon: "⚙️",
+                roi: "Élevé",
+                summary: "L'output d'un manager est égal à l'output de son équipe. Augmentez votre levier.",
+                details: "Andy Grove explique que former un employé pendant 12 heures sur un processus (ex: déploiement d'une app) vous sauvera des centaines d'heures l'année suivante. Arrêtez de coder/produire vous-même, formez vos équipes.",
+                action: "Action : Documentez le processus technique le plus répété chez TechGuys (ex: Onboarding d'un nouveau client) sous forme de checklist standardisée."
+            },
+            {
+                id: 6,
+                title: "6. Les '1-on-1s' Systématiques",
+                category: "Opérations",
+                book: "High Output Management",
+                icon: "👥",
+                roi: "Élevé",
+                summary: "L'outil de management le plus sous-estimé pour retenir les talents tech.",
+                details: "À Montréal, la rétention des talents tech est cruciale. Prévoyez une rencontre individuelle d'une heure toutes les deux semaines avec chaque membre clé. C'est LEUR réunion, pour parler de leur carrière, de leurs blocages et du 'Task-Relevant Maturity'.",
+                action: "Action : Mettez à l'agenda des 1-on-1 récurrents avec vos développeurs clés. Posez une question : 'Quel est le plus grand obstacle à ton travail en ce moment ?'"
+            },
+            {
+                id: 7,
+                title: "7. Le diagnostic avant la stratégie",
+                category: "Stratégie",
+                book: "Good Strategy / Bad Strategy",
+                icon: "🔍",
+                roi: "Moyen (Long terme)",
+                summary: "Fixer un objectif de revenus n'est pas une stratégie. Identifiez l'obstacle central.",
+                details: "Richard Rumelt souligne qu'une bonne stratégie a un diagnostic clair. Pour TechGuys, pourquoi ne croissez-vous pas plus vite ? Est-ce le manque de leads ? Des cycles de vente trop longs ? Un taux de conversion bas ?",
+                action: "Action : Rédigez la politique directrice de l'agence. Exemple : 'Diagnostic : L'acquisition est trop chère. Politique : Nous allons nous positionner comme les experts AI pour contrer la banalisation du dev web'."
+            },
+            {
+                id: 8,
+                title: "8. 'Right Person, Right Seat' (GWC)",
+                category: "Opérations",
+                book: "Traction",
+                icon: "🧩",
+                roi: "Très Élevé",
+                summary: "Évaluez votre équipe selon l'adéquation aux valeurs et la compétence.",
+                details: "GWC signifie : 'Get it, Want it, Capacity to do it'. Une personne peut être un excellent dev (Capacity) mais toxique pour la culture (Wrong Person). Une personne géniale peut être au mauvais poste (Wrong Seat).",
+                action: "Action : Faites la carte de votre structure future idéale (et non des personnes actuelles). Puis, placez les noms. Voyez où sont les trous."
+            },
+            {
+                id: 9,
+                title: "9. Construisez un 'Scoreboard' visible",
+                category: "Opérations",
+                book: "Scaling Up",
+                icon: "📊",
+                roi: "Facile / Rapide",
+                summary: "Si l'équipe ne connaît pas le score, elle ne joue pas pour gagner.",
+                details: "Les employés tech aiment les données. Choisissez 3 à 5 KPIs (Lead Velocity, MRR ajouté, Taux de bugs critiques, Taux d'utilisation) et rendez-les publics chaque semaine.",
+                action: "Action : Créez un tableau de bord (sur un écran dans le bureau ou via un bot Slack/Teams) mis à jour chaque vendredi avec les 5 chiffres vitaux de l'agence."
+            },
+            {
+                id: 10,
+                title: "10. Diversifiez : Seeds, Nets, Spears",
+                category: "Ventes",
+                book: "Predictable Revenue",
+                icon: "🌱",
+                roi: "Élevé",
+                summary: "Ne dépendez pas d'une seule source d'acquisition de clients B2B.",
+                details: "Combinez les 3 méthodes : Seeds (bouche-à-oreille très qualifié, lent à pousser), Nets (Marketing entrant/inbound, webinaires, articles sur l'IA - attrape large), et Spears (Prospection ciblée vers les CTOs/CEOs via LinkedIn/Email).",
+                action: "Action : Auditez d'où viennent vos clients actuels. Si vous êtes 100% 'Seeds' (références), il est temps d'investir dans les 'Spears' (Outbound)."
+            }
+        ];
+
+        function renderTips(tips) {
+            const grid = document.getElementById('tips-grid');
+            grid.innerHTML = '';
+
+            tips.forEach(tip => {
+                const card = document.createElement('div');
+                card.className = 'tip-card bg-white rounded-xl p-6 border border-slate-200 cursor-pointer flex flex-col h-full';
+                card.onclick = () => card.classList.toggle('expanded');
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="text-3xl">${tip.icon}</div>
+                        <span class="text-xs font-semibold bg-indigo-100 text-indigo-800 py-1 px-3 rounded-full">${tip.category}</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">${tip.title}</h3>
+                    <p class="text-slate-600 mb-4 flex-grow">${tip.summary}</p>
+                    
+                    <div class="hidden-content border-t border-slate-100 pt-4 mt-2">
+                        <p class="text-sm text-slate-700 mb-4">${tip.details}</p>
+                        <div class="bg-indigo-50 border-l-4 border-indigo-600 p-3 rounded-r-md">
+                            <p class="text-sm font-semibold text-indigo-900">${tip.action}</p>
+                        </div>
+                        <div class="mt-4 flex justify-between text-xs text-slate-500">
+                            <span>📚 Source: <span class="font-medium">${tip.book}</span></span>
+                            <span>📈 ROI: <span class="font-medium text-green-600">${tip.roi}</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-auto pt-4 text-center text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors">
+                        Cliquez pour développer <span class="text-lg leading-none align-middle">▾</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Initialize Grid
+        renderTips(tipsData);
+
+        // Filter Logic
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Update active state
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-indigo-600', 'text-white', 'active');
+                    b.classList.add('bg-slate-200', 'text-slate-700');
+                });
+                e.target.classList.remove('bg-slate-200', 'text-slate-700');
+                e.target.classList.add('bg-indigo-600', 'text-white', 'active');
+
+                // Filter data
+                const filterValue = e.target.getAttribute('data-filter');
+                if (filterValue === 'all') {
+                    renderTips(tipsData);
+                } else {
+                    const filtered = tipsData.filter(t => t.category === filterValue);
+                    renderTips(filtered);
+                }
+            });
+        });
+
+        // Chart.js Implementation
+        const ctx = document.getElementById('growthChart').getContext('2d');
+        
+        // Mock data representing a typical agency timeline (Months 1 to 24)
+        const labels = Array.from({length: 12}, (_, i) => `Mois ${i*2 + 2}`);
+        
+        // Chaotic growth: up and down, unpredictable (relying on referrals only)
+        const chaoticData = [10, 15, 12, 25, 20, 18, 30, 25, 28, 32, 29, 35]; 
+        
+        // Predictable revenue (Systematized: Outbound + SDRs + Retention via EOS)
+        const predictableData = [10, 12, 16, 22, 30, 42, 58, 78, 102, 130, 165, 210];
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Croissance Prévisible (Systèmes implémentés)',
+                        data: predictableData,
+                        borderColor: '#4f46e5', // Indigo-600
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#4f46e5',
+                    },
+                    {
+                        label: 'Croissance Chaotique (Sans process)',
+                        data: chaoticData,
+                        borderColor: '#94a3b8', // Slate-400
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.2,
+                        fill: false,
+                        pointBackgroundColor: '#94a3b8',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: { family: "'Inter', sans-serif" }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleFont: { family: "'Inter', sans-serif", size: 13 },
+                        bodyFont: { family: "'Inter', sans-serif", size: 13 },
+                        padding: 10,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 }).format(context.parsed.y * 1000);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Revenus Récurrents (MRR)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + 'k $';
+                            }
+                        },
+                        grid: {
+                            color: '#f1f5f9'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
